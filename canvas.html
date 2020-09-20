@@ -1,7 +1,13 @@
 <!doctype html>
 
+<head>
+    <script src="player.js"></script>
+    <script src="grid.js"></script>
+</head>
+
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas><script>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
         var canvas, canvasContext;
 
         window.onload = function() {
@@ -11,9 +17,55 @@
             setInterval(mainloop, 1000 / 50);
         }
 
-        function mainloop() {
-            colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
+        var pXpos = 0;
+        var pYpos = 0;
+        const SIZE = 20;
+        var gridCols = 8;
+        var gridRow = 5;
+        var rowCounter = 0;
+        var player = new Player(pXpos, pYpos, SIZE, SIZE, 'red', );
+
+        var settingup = true;
+        
+        var grids = [];
+        
+        function setup(){
+            
+            for (var i = 0; i < gridCols * gridRow; i++) {
+
+                var gWidth = canvas.width / 8;
+                var gHeight = canvas.height / 5;
+
+                if (i % gridCols == 0 && i != 0) {
+                    rowCounter++;
+                    grid.drawRect;
+                }
+
+                var gXpos = i % gridCols;
+                var gYpos = rowCounter * gHeight;
+                var type = 0;
+
+                var grid = new Grid(gXpos, gYpos, gWidth, gHeight, 'green', type);
+
+                grids.push(grid);
+            }
         }
+
+        function mainloop() {
+            if(settingup){
+               setup();
+                settingup = false;
+            }
+            colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
+            player.drawRect(); // player img
+
+            if (grids.length > 0) {
+//                grid.draw();
+            }
+        }
+
+
+
 
         function colorRect(x, y, w, h, c) {
             canvasContext.fillStyle = c;
