@@ -1,0 +1,83 @@
+<!doctype html>
+
+<head>
+    <script src="player.js"></script>
+    <script src="grid.js"></script>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="500" height="400"></canvas>
+    <script>
+        var canvas, canvasContext;
+
+        window.onload = function() {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            setInterval(mainloop, 1000 / 50);
+        }
+
+        var pXpos = 0;
+        var pYpos = 0;
+        const SIZE = 20;
+        var gridCols = 8;
+        var gridRow = 5;
+        var rowCounter = 0;
+        var player = new Player(pXpos, pYpos, SIZE, SIZE, 'red', );
+
+        var settingup = true;
+        
+        var grids = [];
+        var brickCounter = 0;
+        function setup(){
+            
+            for (var i = 0; i < gridCols * gridRow; i++) {
+                var gap = 2;
+                var gWidth = (canvas.width - 100) / gridCols - gap; // 48 
+                var gHeight = (canvas.height - 200) / gridRow - gap; // 48
+
+                if (i % gridCols == 0 && i != 0) {
+                    rowCounter++;
+                }
+                //  50 , 100 , 150 , 200, 
+                var gXpos = (i % gridCols) * gWidth; // 50 , 
+                gXpos += gap * brickCounter;
+                var gYpos = rowCounter * gHeight + (gap * rowCounter);
+                var type = 0;
+
+                var grid = new Grid(gXpos, gYpos, gWidth, gHeight, 'green', type);
+                brickCounter++; 
+                
+                if(brickCounter%gridCols == 0){
+                   brickCounter = 0;
+                }
+                
+                grids.push(grid);
+            }
+        }
+
+        function mainloop() {
+            if(settingup){
+               setup();
+                settingup = false;
+            }
+            colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
+            player.drawRect(); // player img
+
+            if (grids.length > 0) {
+                grids.forEach(function(grid,i,array){
+                    grid.draw();
+                });
+            }
+        }
+
+
+
+
+        function colorRect(x, y, w, h, c) {
+            canvasContext.fillStyle = c;
+            canvasContext.fillRect(x, y, w, h);
+        }
+
+    </script>
+</body>
