@@ -3,16 +3,20 @@
 <head>
     <script src="player.js"></script>
     <script src="grid.js"></script>
+    <script src="enemy.js"></script>
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="500" height="400"></canvas>
+    <canvas id="gameCanvas" width="700" height="600"></canvas>
     <script>
         var canvas, canvasContext;
 
         window.onload = function() {
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
+
+            document.addEventListener('keydown', keyPressed);
+            document.addEventListener('keyup', keyReleased);
 
             setInterval(mainloop, 1000 / 50);
         }
@@ -26,11 +30,69 @@
         var player = new Player(pXpos, pYpos, SIZE, SIZE, 'red', );
 
         var settingup = true;
-        
+
         var grids = [];
+        var enemys = [];
+
         var brickCounter = 0;
-        function setup(){
+        var totalEnemy = 0;
+        var maxEnemy = 10;
+        var delay = 0;
+        
+        const SPACE_KEY = 32;
+
+        function mainloop() {
+            colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
+            delay += 1;
+            if(totalEnemy < maxEnemy && delay%200 == 0){
+                spawnEnemy(); 
+                totalEnemy++
+            }
+            if (settingup) {
+                setup();
+                settingup = false;
+            }
+
+            if (grids.length > 0) {
+                grids.forEach(function(grid, i, array) {
+                    grid.draw();
+                });
+            }
+
+            if (enemys.length > 0) {
+
+                enemys.forEach(function(enemy, i, array) {
+                    enemy.draw();
+                    enemy.move();
+
+                    if (enemy.outOfBounds()) {
+                        delete enemys[i];
+                    }
+                });
+                enemys = enemys.filter(item => item !== undefined)
+            }
+
+            player.drawRect(); // player img
+
+        }
+
+        function round1() {
             
+        }
+
+        function keyPressed(evt) {
+
+            if (evt.keyCode == SPACE_KEY) {
+                spawnEnemy();
+            }
+        }
+
+        function keyReleased(evt) {
+            if (evt.keyCode == SPACE_KEY) {}
+        }
+
+        function setup() {
+
             for (var i = 0; i < gridCols * gridRow; i++) {
                 var gap = 2;
                 var gWidth = (canvas.width - 100) / gridCols - gap; // 48 
@@ -46,32 +108,27 @@
                 var type = 0;
 
                 var grid = new Grid(gXpos, gYpos, gWidth, gHeight, 'green', type);
-                brickCounter++; 
-                
-                if(brickCounter%gridCols == 0){
-                   brickCounter = 0;
+                brickCounter++;
+
+                if (brickCounter % gridCols == 0) {
+                    brickCounter = 0;
                 }
-                
+
                 grids.push(grid);
             }
         }
 
-        function mainloop() {
-            if(settingup){
-               setup();
-                settingup = false;
-            }
-            colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
-            player.drawRect(); // player img
+        function spawnEnemy() {
+            var enemyWidth = 20;
+            var enemyXpos = canvas.width - enemyWidth;
+            var enemyYpos = canvas.height * 0.15;
+            var enemyHeight = 60;
+            var enemyXspeed = 0.75;
 
-            if (grids.length > 0) {
-                grids.forEach(function(grid,i,array){
-                    grid.draw();
-                });
-            }
+            var enemy = new Enemy(enemyXpos, enemyYpos, enemyWidth, enemyHeight, 'red', enemyXspeed);
+
+            enemys.push(enemy);
         }
-
-
 
 
         function colorRect(x, y, w, h, c) {
